@@ -27,7 +27,9 @@ SECRET_KEY = 'fur2b)i5kk!eo&cqntv_s=gqx4=0gn1@-0ek2e&-*5lgis#)u)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'api.meiduo.site'
+]
 
 
 # Application definition
@@ -40,9 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users.apps.UserConfig',
+    'users.apps.UsersConfig',
 
-    'rest-framework',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -82,8 +84,8 @@ WSGI_APPLICATION = 'meiduo.wsgi.application'
 
 DATABASES = {
     'default': {
-    'ENGINE': 'django.db.backends.mysql',
-      'NAME': 'meiduomall',
+      'ENGINE': 'django.db.backends.mysql',
+      'NAME': 'meiduo_mall',
       'HOST': 'localhost',
       'PORT': 3306,
       'USER': 'meiduo',
@@ -165,7 +167,7 @@ LOGGING = {
     },
     'filters': {  # 对日志进行过滤
         'require_debug_true': {  # django在debug模式下才输出日志
-            '()': 'django.utils.logs.RequireDebugTrue',
+            '()': 'django.utils.log.RequireDebugTrue',
         },
     },
     'handlers': {  # 日志处理方法
@@ -178,7 +180,7 @@ LOGGING = {
         'file': {  # 向文件中输出日志
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(os.path.dirname(BASE_DIR) , "logs/meiduo.logs"),  # 日志文件的位置
+            'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/meiduo.log"),  # 日志文件的位置
             'maxBytes': 300 * 1024 * 1024,
             'backupCount': 10,
             'formatter': 'verbose'
