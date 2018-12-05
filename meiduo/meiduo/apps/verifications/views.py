@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from celery_tasks.sms_code.tasks import send_sms_code
 from rest_framework.views import APIView
 from django_redis import get_redis_connection
 from rest_framework.response import Response
@@ -24,6 +24,9 @@ class SmsCode(APIView):
         redis_pipeline.setex('sms_flag_' + mobile, constants.SMS_FLAG_EXPIRES, 1)
         redis_pipeline.execute()
         # 调用第三方发送验证码
-        print(sms_code)
+        # print(sms_code)
+
+        # 代理人将任务加到队列redis中,通知工人取任务执行
+        send_sms_code.delay(sms_code)
         # 响应
         return Response({'message': 'ok'})
