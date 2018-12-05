@@ -15,8 +15,9 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 import sys
+
 # sys.path==>表示python解释器查找包的路径
-sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -31,7 +32,6 @@ ALLOWED_HOSTS = [
     'api.meiduo.site'
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'users.apps.UsersConfig',
+    'verifications.apps.VerificationsConfig',
 
     'rest_framework',
     # 添加跨域应用
-    'corsheaders'
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -86,21 +88,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'meiduo.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
     'default': {
-      'ENGINE': 'django.db.backends.mysql',
-      'NAME': 'meiduo_mall',
-      'HOST': 'localhost',
-      'PORT': 3306,
-      'USER': 'meiduo',
-      'PASSWORD': 'meiduo'
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'meiduo_mall',
+        'HOST': 'localhost',
+        'PORT': 3306,
+        'USER': 'meiduo',
+        'PASSWORD': 'meiduo'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -120,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -133,7 +132,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
@@ -152,6 +150,13 @@ CACHES = {
     "session": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "sms_code": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
