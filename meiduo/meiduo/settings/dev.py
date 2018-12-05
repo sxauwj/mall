@@ -208,3 +208,6 @@ REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'meiduo.utils.exceptions.exception_handler',
 }
+
+# 替换django默认的用户类模型
+AUTH_USER_MODEL = 'users.User'
