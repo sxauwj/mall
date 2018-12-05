@@ -45,9 +45,12 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
 
     'rest_framework',
+    # 添加跨域应用
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,6 +59,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+# 添加cors的白名单
+CORS_ORIGIN_WHITELIST = (
+    'www.meiduo.site:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带api.meiduo.site 的cookie
 
 ROOT_URLCONF = 'meiduo.urls'
 
