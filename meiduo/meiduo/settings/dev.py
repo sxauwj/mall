@@ -28,6 +28,7 @@ SECRET_KEY = 'fur2b)i5kk!eo&cqntv_s=gqx4=0gn1@-0ek2e&-*5lgis#)u)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# 可以访问后端的域名
 ALLOWED_HOSTS = [
     'api.meiduo.site'
 ]

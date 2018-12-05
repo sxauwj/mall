@@ -13,7 +13,7 @@ class SmsCode(APIView):
         redis_cli = get_redis_connection('sms_code')
         # 验证是否发过短信
         if redis_cli.get('sms_flag_' + mobile):
-            return Response({'message': '已经发送'})
+            return Response({'message': '短信已经发送'})
         # 若未发过则生成六位随机验证码
         sms_code = random.randint(100000, 999999)
         # 将随机数保存到redis
