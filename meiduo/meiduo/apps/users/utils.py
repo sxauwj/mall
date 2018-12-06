@@ -20,7 +20,6 @@ class MeiduoModelBackend(ModelBackend):
                 user = None
         if user is not None:
             if not user.check_password(password):
-                user= None
+                user = None
         # 返回
         return user
-
