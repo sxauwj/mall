@@ -227,7 +227,13 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     # jwt的过期时间
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'meiduo.utils.jwt_handler.jwt_response_handler',
 }
 
 # 替换django默认的用户类模型
 AUTH_USER_MODEL = 'users.User'
+
+# 指定认证后端
+AUTHENTICATION_BACKENDS = [
+    'users.utils.MeiduoModelBackend',
+]

@@ -60,6 +60,7 @@ class CreateUserSerializer(serializers.Serializer):
         if int(sms_code_redis) != sms_code_request:
             raise serializers.ValidationError('验证码错误!')
 
+
         # 验证两个密码是否相等
         pwd1 = attrs.get('password')
         pwd2 = attrs.get('password2')
@@ -80,7 +81,7 @@ class CreateUserSerializer(serializers.Serializer):
         # 注册成功，状态保持，生成jwt
         # 1.获取生成payload方法
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        # 2.获取生成token的方法
+        # 2.获取生成token的方法（获取编码方法）
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
         # 3.根据用户对象生成载荷
         payload = jwt_payload_handler(user)
