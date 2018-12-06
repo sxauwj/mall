@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import datetime
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 import sys
 
@@ -213,6 +215,18 @@ LOGGING = {
 REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'meiduo.utils.exceptions.exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # jwt 客户端调用接口进行身份验证的方式
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # session 用于admin
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
+
+# jwt配置　
+JWT_AUTH = {
+    # jwt的过期时间
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
 
 # 替换django默认的用户类模型

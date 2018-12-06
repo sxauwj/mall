@@ -2,7 +2,8 @@ from rest_framework import serializers
 from .models import User
 import re
 from django_redis import get_redis_connection
-
+# 手动签发ＪＷＴ
+from rest_framework_jwt.settings import api_settings
 
 class CreateUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -26,7 +27,8 @@ class CreateUserSerializer(serializers.Serializer):
     sms_code = serializers.IntegerField(write_only=True)
     mobile = serializers.CharField()
     allow = serializers.CharField(write_only=True)
-
+    # token字段
+    token = serializers.CharField(label='登录状态token',read_only=True)
     def validate_username(self, value):
         if User.objects.filter(username=value).count() > 0:
             raise serializers.ValidationError('用户名存在')
@@ -72,6 +74,18 @@ class CreateUserSerializer(serializers.Serializer):
         user = User()
         user.username = validated_data.get('username')
         user.mobile = validated_data.get('mobile')
-        user.password = validated_data.get('password')
+        user.set_password(validated_data.get('password'))
         user.save()
+
+        # 注册成功，状态保持，生成jwt
+        # 1.获取生成payload方法
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        # 2.获取生成token的方法
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        # 3.根据用户对象生成载荷
+        payload = jwt_payload_handler(user)
+        # 4.根据载荷生成token
+        token = jwt_encode_handler(payload)
+        # 5.输出
+        user.token = token
         return user
