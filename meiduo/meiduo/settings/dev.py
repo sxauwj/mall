@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'verifications.apps.VerificationsConfig',
+    'oauth.apps.OauthConfig',
 
     'rest_framework',
     # 添加跨域应用
@@ -228,7 +229,7 @@ JWT_AUTH = {
     # jwt的过期时间
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # 指定响应结果
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'meiduo.utils.jwt_handler.jwt_response_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER':             'meiduo.utils.jwt_handler.jwt_response_handler',
     # 指定载荷数据
     'JWT_PAYLOAD_HANDLER': 'meiduo.utils.jwt_handler.jwt_payload_handler2',
 
@@ -241,3 +242,8 @@ AUTH_USER_MODEL = 'users.User'
 AUTHENTICATION_BACKENDS = [
     'users.utils.MeiduoModelBackend',
 ]
+# QQ登录的开发者信息
+QQ_CLIENT_ID = '101474184'
+QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'
+QQ_STATE = '/'
