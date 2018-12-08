@@ -229,7 +229,7 @@ JWT_AUTH = {
     # jwt的过期时间
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # 指定响应结果
-    'JWT_RESPONSE_PAYLOAD_HANDLER':             'meiduo.utils.jwt_handler.jwt_response_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER':'meiduo.utils.jwt_handler.jwt_response_handler',
     # 指定载荷数据
     'JWT_PAYLOAD_HANDLER': 'meiduo.utils.jwt_handler.jwt_payload_handler2',
 
