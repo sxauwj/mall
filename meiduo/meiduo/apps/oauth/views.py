@@ -17,9 +17,25 @@ class OauthQQView(APIView):
         # https://graph.qq.com/oauth2.0/show?which=Login&display=pc&state=%2F&response_type=code&redirect_uri=http%3A%2F%2Fwww.meiduo.site%3A8080%2Foauth_callback.html&scope=get_user_info&client_id=101474184
         return Response({'login_url': url})
     # 浏览器回调地址并携带code
+
     #http://www.meiduo.site:8080/oauth_callback.html?code=BC9CACC4A6BED56042318CF64DC539E3&state=%2F
-
-class QQUserView(APIView):
+''
+class QQAuthUserView(APIView):
     def get(self,request):
+        #　获得code
+        code = request.query_params.get('code')
+        # 请求资源
+        auth = OAuthQQ()
+        # 获得token
+        token = auth.get_access_token(code=code)
+        # 获得openid
+        openid = auth.get_openid(token)
+        data = {}
+        return
+        # 将Q　和网站帐号绑定
 
-        code = request.query
+
+
+        pass
+
+
