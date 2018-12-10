@@ -4,7 +4,7 @@ import re
 from django_redis import get_redis_connection
 # 手动签发ＪＷＴ
 from rest_framework_jwt.settings import api_settings
-
+from celery_tasks.send_email.tasks import send_email
 class CreateUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(
@@ -94,3 +94,22 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','username','mobile','email','email_active']
+
+class SendEmailSerializer(serializers.ModelSerializer):
+    """
+    邮箱序列化器
+    """
+    class Meta:
+        model = User
+        fields = ['id','email']
+
+    def update(self, instance, validated_data):
+        # 设置用户的邮箱
+        # instance.email = validated_data['email']
+        # instance.save()
+        # 重写update方法，保持原有的操作不变，新增发邮件
+        result = super().update(instance,validated_data)
+
+        # 调用进程发送邮件
+        send_email.delay(validated_data.get('email'),instance.id)
+        return result
