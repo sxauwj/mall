@@ -5,12 +5,12 @@ from .models import AreaInfo
 class AreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = AreaInfo
-        fields = ['id','name']
+        fields = ['id', 'name']
+
 
 class SubSerializer(serializers.ModelSerializer):
-    subs = AreaSerializer()
+    subs = AreaSerializer(many=True, read_only=True)
+
     class Meta:
         model = AreaInfo
-        fields = ['id','name','subs']
-
-
+        fields = ['id', 'name', 'subs']
