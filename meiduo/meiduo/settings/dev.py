@@ -261,3 +261,11 @@ EMAIL_HOST_PASSWORD = 'wangyi163'
 EMAIL_FROM = '美多商城<wangjiepyer@163.com>'
 # 验证邮箱的过期时间
 EMAIL_EXPIRES = 2 * 60 * 60
+
+# DRF扩展
+REST_FRAMEWORK_EXTENSIONS = {
+    # 缓存时间
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,
+    # 缓存存储
+    'DEFAULT_USE_CACHE': 'default',
+}

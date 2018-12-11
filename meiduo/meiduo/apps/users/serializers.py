@@ -5,6 +5,9 @@ from django_redis import get_redis_connection
 # 手动签发ＪＷＴ
 from rest_framework_jwt.settings import api_settings
 from celery_tasks.send_email.tasks import send_email
+from .models import Address
+
+
 class CreateUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(
@@ -28,7 +31,8 @@ class CreateUserSerializer(serializers.Serializer):
     mobile = serializers.CharField()
     allow = serializers.CharField(write_only=True)
     # token字段
-    token = serializers.CharField(label='登录状态token',read_only=True)
+    token = serializers.CharField(label='登录状态token', read_only=True)
+
     def validate_username(self, value):
         if User.objects.filter(username=value).count() > 0:
             raise serializers.ValidationError('用户名存在')
@@ -60,7 +64,6 @@ class CreateUserSerializer(serializers.Serializer):
         if int(sms_code_redis) != sms_code_request:
             raise serializers.ValidationError('验证码错误!')
 
-
         # 验证两个密码是否相等
         pwd1 = attrs.get('password')
         pwd2 = attrs.get('password2')
@@ -90,26 +93,58 @@ class CreateUserSerializer(serializers.Serializer):
         # 5.输出
         user.token = token
         return user
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username','mobile','email','email_active']
+        fields = ['id', 'username', 'mobile', 'email', 'email_active']
+
 
 class SendEmailSerializer(serializers.ModelSerializer):
     """
     邮箱序列化器
     """
+
     class Meta:
         model = User
-        fields = ['id','email']
+        fields = ['id', 'email']
 
     def update(self, instance, validated_data):
         # 设置用户的邮箱
         # instance.email = validated_data['email']
         # instance.save()
         # 重写update方法，保持原有的操作不变，新增发邮件
-        result = super().update(instance,validated_data)
+        result = super().update(instance, validated_data)
 
         # 调用进程发送邮件
-        send_email.delay(validated_data.get('email'),instance.id)
+        send_email.delay(validated_data.get('email'), instance.id)
         return result
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    # 隐含属性需要专门指定，省市区的外键，通过_id进行设置
+    province_id = serializers.IntegerField()
+    city_id = serializers.IntegerField()
+    district_id = serializers.IntegerField()
+    # 省市区的信息，以字符串的形式输出,输出关联属性，默认输出主键
+    province = serializers.StringRelatedField(read_only=True)
+    city = serializers.StringRelatedField(read_only=True)
+    district = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Address
+        exclude = ['title','is_deleted','user']
+
+    # 验证信息省略
+
+    def create(self, validated_data):
+        # 接受数据，为属性赋值，创建
+        # 重写此方法，添加user_id参数，不接受客户端传递的user_id参数
+        # 创建对象并返回
+        validated_data['user_id'] = self.context['request'].user.id
+        validated_data['title'] = validated_data['receiver']
+        return super().create(validated_data)
+
+
+

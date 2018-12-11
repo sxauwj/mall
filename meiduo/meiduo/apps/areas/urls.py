@@ -5,6 +5,7 @@ urlpatterns = [
     #areas
     #areas/pk
 
+
 ]
 router = DefaultRouter()
 router.register('areas',views.AreasViewSet,base_name='areas')
