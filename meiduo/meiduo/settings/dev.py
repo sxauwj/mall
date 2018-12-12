@@ -49,10 +49,13 @@ INSTALLED_APPS = [
     'verifications.apps.VerificationsConfig',
     'oauth.apps.OauthConfig',
     'areas.apps.AreasConfig',
+    'contents.apps.ContentsConfig',
+    'goods.apps.GoodsConfig',
 
     'rest_framework',
     # 添加跨域应用
     'corsheaders',
+
 
 ]
 

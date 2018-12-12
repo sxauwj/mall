@@ -11,7 +11,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from .models import Address
-
+from rest_framework.decorators import action
 
 class UsernameCountView(APIView):
     """用户名数量"""
@@ -135,3 +135,23 @@ class AddressViewSet(ModelViewSet):
         # 保存更改
         address.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'],detail=True) # addresses/(pk)/status/
+    def status(self,request,pk):
+        # 设置默认收货地址
+        user = request.user
+        user.default_address_id = pk
+        user.save()
+        return Response({'message':'ok'})
+
+    @action(methods=['put'],detail=True) # addresses/(pk)/title
+    def title(self,request,pk):
+        # 修改地址标题
+        # 获取当前收货地址对象
+        address = self.get_object()
+        address.title = request.data.get('title')
+        address.save()
+        return Response({'message': 'ok'})
+
+
+
