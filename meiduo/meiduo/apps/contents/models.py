@@ -1,5 +1,7 @@
 from django.db import models
 from meiduo.utils.models import BaseModel
+
+
 class ContentCategory(BaseModel):
     """
     广告内容类别
@@ -35,4 +37,3 @@ class Content(BaseModel):
 
     def __str__(self):
         return self.category.name + ': ' + self.title
-
