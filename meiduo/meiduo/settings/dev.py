@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'ckeditor',  # 富文本编辑器
     'ckeditor_uploader',  # 富文本编辑器上传图片模块
 
-
 ]
 
 MIDDLEWARE = [
@@ -237,7 +236,7 @@ JWT_AUTH = {
     # jwt的过期时间
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # 指定响应结果
-    'JWT_RESPONSE_PAYLOAD_HANDLER':'meiduo.utils.jwt_handler.jwt_response_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'meiduo.utils.jwt_handler.jwt_response_handler',
     # 指定载荷数据
     'JWT_PAYLOAD_HANDLER': 'meiduo.utils.jwt_handler.jwt_payload_handler2',
 
@@ -276,6 +275,7 @@ REST_FRAMEWORK_EXTENSIONS = {
     # 缓存存储
     'DEFAULT_USE_CACHE': 'default',
 }
+
 # 富文本编辑器ckeditor配置
 CKEDITOR_CONFIGS = {
     'default': {
@@ -284,4 +284,11 @@ CKEDITOR_CONFIGS = {
         # 'width': 300,  # 编辑器宽度
     },
 }
-CKEDITOR_UPLOAD_PATH = ''  # 上传图片保存路径，使用了FastDFS，所以此处设为''
+
+CKEDITOR_UPLOAD_PATH = ''  # admin上传图片保存路径，使用了FastDFS，所以此处设为''
+
+# FDFS配置
+FDFS_CLIENT = os.path.join(BASE_DIR,'utils/fastdfs/client.conf')
+FDFS_URL = 'http://image.meiduo.site:8888/'
+# django使用的文件存储类型
+DEFAULT_FILE_STORAGE = 'meiduo.utils.fastdfs.fdfs_storage.FdfsStorage'
