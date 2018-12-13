@@ -55,6 +55,7 @@ class OAuthQQ(object):
         response_data = response.read().decode()
         data = parse_qs(response_data)
         access_token = data.get('access_token', None)
+
         if not access_token:
             logger.error('code=%s msg=%s' % (data.get('code'), data.get('msg')))
             raise Exception('获取access token失败')

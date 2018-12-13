@@ -33,6 +33,7 @@ class QQAuthUserView(CreateAPIView):
     def get(self, request):
         # 　获得code
         code = request.query_params.get('code')
+
         # 请求资源
         auth = OAuthQQ()
         # 获得token
