@@ -11,9 +11,9 @@ class FdfsStorage(Storage):
     def save(self, name, content, max_length=None):
         # content表示客户端上传的文件对象
 
-        # 创建对象
+        # 创建对象,由于是从manage.py文件中启动所以，引用client.conf的路径要改变
         client = Fdfs_client(settings.FDFS_CLIENT)
-        # 上传，读取请求报文中的文件数据
+        # 上传，读取请求报文中的文件数据，文件是读取从admin发来的所以不能通过file_name来上传
         result = client.upload_by_buffer(content.read())
         # 返回文件名
         return result['Remote file_id']
