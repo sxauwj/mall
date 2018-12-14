@@ -302,7 +302,7 @@ GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(B
 # 定时任务
 CRONJOBS = [
     # 每5分钟执行一次生成主页静态文件
-    ('*/5 * * * *', 'contents.crons.generate_index_html', '>> '+ os.path.dirname(BASE_DIR)+'/logs/crontab.log')
+    ('*/1 * * * *', 'contents.crons.generate_index_html', '>> '+ os.path.dirname(BASE_DIR)+'/logs/crontab.log')
 ]
 # 解决crontab中文问题
 CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
