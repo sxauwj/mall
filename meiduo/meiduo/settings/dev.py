@@ -62,6 +62,8 @@ INSTALLED_APPS = [
 
     # 添加执行定时任务应用
     'django_crontab',
+    # 全文检索
+    'haystack',
 
 ]
 
@@ -302,7 +304,21 @@ GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(B
 # 定时任务
 CRONJOBS = [
     # 每5分钟执行一次生成主页静态文件
-    ('*/1 * * * *', 'contents.crons.generate_index_html', '>> '+ os.path.dirname(BASE_DIR)+'/logs/crontab.log')
+    ('*/10 * * * *', 'contents.crons.generate_index_html', '>> '+ os.path.dirname(BASE_DIR)+'/logs/crontab.log')
 ]
 # 解决crontab中文问题
 CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
+
+# Haystack　全文检索
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        # 端口号固定为9200
+        'URL': 'http://192.168.43.42:9200/',
+        # 指定elasticsearch建立的索引库的名称，可改
+        'INDEX_NAME': 'meiduo',
+    },
+}
+
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

@@ -4,6 +4,8 @@ from .models import SKU
 from .serializers import SKUSerializer
 from meiduo.utils.pagination import StandardResultsSetPagination
 from rest_framework.filters import OrderingFilter
+from drf_haystack.viewsets import HaystackViewSet
+from .serializers import SKUIndexSerializer
 
 
 class SKUList(ListAPIView):
@@ -19,3 +21,14 @@ class SKUList(ListAPIView):
     # 排序
     filter_backends = (OrderingFilter,)
     ordering_fields = ('create_time', 'price', 'sales')
+
+class SKUSearchViewSet(HaystackViewSet):
+    """
+    SKU搜索
+    """
+    index_models = [SKU]
+
+    serializer_class = SKUIndexSerializer
+
+    # 分页
+    pagination_class = StandardResultsSetPagination
