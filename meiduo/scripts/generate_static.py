@@ -9,7 +9,7 @@ import os
 import django
 
 # 指定python解释器的导包路径，当前指定为manage.py同级目录
-# sys.path.insert(0, '../')
+sys.path.insert(0, '../')
 
 # 读取配置，设置环境变量
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "meiduo.settings.dev")
