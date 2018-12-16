@@ -5,13 +5,18 @@ from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, ListCreateAPIView
 from .serializers import CreateUserSerializer
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserSerializer, SendEmailSerializer, AddressSerializer,HistorySerizlizer
+from .serializers import UserSerializer, SendEmailSerializer, AddressSerializer, HistorySerizlizer
 from itsdangerous import TimedJSONWebSignatureSerializer as TJWSS
 from django.conf import settings
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from .models import Address
 from rest_framework.decorators import action
+# from rest_framework.generics import
+from django_redis import get_redis_connection
+from goods.models import SKU
+from goods.serializers import SKUSerializer
+
 
 class UsernameCountView(APIView):
     """用户名数量"""
@@ -136,16 +141,16 @@ class AddressViewSet(ModelViewSet):
         address.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['put'],detail=True) # addresses/(pk)/status/
-    def status(self,request,pk):
+    @action(methods=['put'], detail=True)  # addresses/(pk)/status/
+    def status(self, request, pk):
         # 设置默认收货地址
         user = request.user
         user.default_address_id = pk
         user.save()
-        return Response({'message':'ok'})
+        return Response({'message': 'ok'})
 
-    @action(methods=['put'],detail=True) # addresses/(pk)/title
-    def title(self,request,pk):
+    @action(methods=['put'], detail=True)  # addresses/(pk)/title
+    def title(self, request, pk):
         # 修改地址标题
         # 获取当前收货地址对象
         address = self.get_object()
@@ -158,6 +163,27 @@ class SKUHistoryView(CreateAPIView):
     # 增加商品编号
     # 未登录用户不存储浏览记录
     permission_classes = [IsAuthenticated]
+
     serializer_class = HistorySerizlizer
+    # def post():　# create
+    # 检验
 
+    # 查询
+    queryset = SKU.objects.filter()
 
+    def get(self, request):
+        # 从redis中获取商品编号
+        redis_cli = get_redis_connection('history')
+        key = 'history%d' % request.user.id
+        sku_ids = redis_cli.lrange(key, 0, -1)
+        # 从redis中读取的数据为bytes类型，需要转化int
+        sku_ids = [int(sku_id) for sku_id in sku_ids]
+
+        # 默认按id排序
+        # sku_list = SKU.objects.filter(pk__in=sku_ids)
+        skus = []
+        for sku_id in sku_ids:
+            sku = SKU.objects.get(pk=sku_id)
+            skus.append(sku)
+        serializer = SKUSerializer(skus, many=True)
+        return Response(serializer.data)
