@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'areas.apps.AreasConfig',
     'contents.apps.ContentsConfig',
     'goods.apps.GoodsConfig',
+    'carts.apps.CartsConfig',
 
     'rest_framework',
     # 添加跨域应用
