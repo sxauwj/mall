@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, ListCreateAPIView
 from .serializers import CreateUserSerializer
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserSerializer, SendEmailSerializer, AddressSerializer
+from .serializers import UserSerializer, SendEmailSerializer, AddressSerializer,HistorySerizlizer
 from itsdangerous import TimedJSONWebSignatureSerializer as TJWSS
 from django.conf import settings
 from rest_framework import status
@@ -153,5 +153,11 @@ class AddressViewSet(ModelViewSet):
         address.save()
         return Response({'message': 'ok'})
 
+
+class SKUHistoryView(CreateAPIView):
+    # 增加商品编号
+    # 未登录用户不存储浏览记录
+    permission_classes = [IsAuthenticated]
+    serializer_class = HistorySerizlizer
 
 

@@ -32,3 +32,5 @@ class SKUSearchViewSet(HaystackViewSet):
 
     # 分页
     pagination_class = StandardResultsSetPagination
+
+

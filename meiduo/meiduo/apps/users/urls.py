@@ -13,6 +13,8 @@ urlpatterns = [
     url(r'^emails/$',views.SendEmailView.as_view()),
     url(r'^emails/verification/$',views.EmailActiveView.as_view()),
     # url('^addresses/$',views.AddressViewSet.as_view()),
+    url('^browse_histories/$', views.SKUHistoryView.as_view())
+
 ]
 
 router = DefaultRouter()

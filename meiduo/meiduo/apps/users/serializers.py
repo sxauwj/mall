@@ -6,6 +6,7 @@ from django_redis import get_redis_connection
 from rest_framework_jwt.settings import api_settings
 from celery_tasks.send_email.tasks import send_email
 from .models import Address
+from goods.models import SKU
 
 
 class CreateUserSerializer(serializers.Serializer):
@@ -145,6 +146,43 @@ class AddressSerializer(serializers.ModelSerializer):
         validated_data['user_id'] = self.context['request'].user.id
         validated_data['title'] = validated_data['receiver']
         return super().create(validated_data)
+
+class HistorySerizlizer(serializers.Serializer):
+    sku_id = serializers.IntegerField()
+
+    def validate_sku_id(self,value):
+        sku = SKU.objects.filter(pk=value)
+        if not sku :
+            raise serializers.ValidationError('无商品信息')
+        return value
+
+    def create(self,validated_data):
+        """
+        向redis的指定的库，添加指定商品的编号
+        :param validated_data:
+        :return:
+        """
+        sku_id = validated_data['sku_id']
+        # 连接redis
+        user  = self.context['request'].user
+        redis_cli = get_redis_connection('history')
+        key = 'history%d' % user.id
+
+        # 删除键
+        redis_cli.lrem(key,0,sku_id)
+
+        # 添加键
+        redis_cli.lpush(key,sku_id)
+
+        # 截取
+        redis_cli.ltrim(key,0,4)
+
+        return validated_data
+
+
+
+
+
 
 
 

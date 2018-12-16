@@ -3,7 +3,7 @@ from . import views
 from rest_framework.routers import DefaultRouter
 
 urlpatterns = [
-    url('^categories/(?P<category_id>\d+)/skus/$',views.SKUList.as_view())
+    url('^categories/(?P<category_id>\d+)/skus/$',views.SKUList.as_view()),
 
 ]
 router = DefaultRouter()
