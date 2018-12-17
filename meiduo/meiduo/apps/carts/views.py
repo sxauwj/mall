@@ -222,9 +222,8 @@ class SelectAllView(APIView):
             response.set_cookie('cart', dumps(cook_dict), COOKIE_EXPIRES)
         else:
             redis_cli = get_redis_connection('cart')
-            sku_list = redis_cli.hgetall('cart_%d' % user.id) # {b'16': b'4'}
-            sku_id = [int(sku_id) for sku_id,count in sku_list.items()]
-
+            sku_list = redis_cli.hgetall('cart_%d' % user.id)  # {b'16': b'4'}
+            sku_id = [int(sku_id) for sku_id, count in sku_list.items()]
 
             if selected:
                 redis_cli.sadd('cart_selected%d' % user.id, *sku_id)

@@ -16,6 +16,8 @@ from rest_framework.decorators import action
 from django_redis import get_redis_connection
 from goods.models import SKU
 from goods.serializers import SKUSerializer
+from rest_framework_jwt.views import ObtainJSONWebToken
+from carts.utils import merge_cart_cookie_to_redis
 
 
 class UsernameCountView(APIView):
@@ -187,3 +189,16 @@ class SKUHistoryView(CreateAPIView):
             skus.append(sku)
         serializer = SKUSerializer(skus, many=True)
         return Response(serializer.data)
+
+
+class LoginView(ObtainJSONWebToken):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        # 合并购物车
+        # request.user检验用户，用户未登录则为匿名用户
+        # request.user==>匿名用户
+        if 'user_id' in response.data:
+            user_id = response.data.get('user_id')
+            response = merge_cart_cookie_to_redis(request, user_id, response)
+        return response
