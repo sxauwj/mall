@@ -5,6 +5,7 @@ from .serializers import CartSerializers, CartListSerializer
 from meiduo.utils.meiduo_json import dumps, loads
 from .constants import COOKIE_EXPIRES
 from goods.models import SKU
+from rest_framework import status
 
 
 class CartView(APIView):
@@ -28,12 +29,13 @@ class CartView(APIView):
 
         # 获取cookie
         cart_cookie_dict = request.COOKIES.get('cart')
-        print('拿到的cookie', cart_cookie_dict)
+
         # 第一次添加购物车，未获取到cookie则准备cart_cookie字典
         if not cart_cookie_dict:
             cart_cookie_dict = {}
         else:
             # 获取到cookie解码成字典
+
             cart_cookie_dict = loads(cart_cookie_dict)
 
         # 将物品添加到cookie中
@@ -102,9 +104,57 @@ class CartView(APIView):
         cart_dict[sku_id]['selected'] = selected
 
         # 创建响应对象
-        response = Response()
+        response = Response(serializer.validated_data)
 
         # 设置cookie
         response.set_cookie('cart', dumps(cart_dict), COOKIE_EXPIRES)
         # 返回响应
+        return response
+
+    def delete(self, request):
+        # 获取sku_id {'sku_id': 12}
+        sku_id_dict = request.data
+
+        sku_id = int(sku_id_dict['sku_id'])
+        # 获取cookie
+        cart_dict = request.COOKIES.get('cart')
+        if cart_dict is None:
+            return Response({"message": 'no data'})
+        cart_dict = loads(cart_dict)
+        # 删除
+        if sku_id in cart_dict:
+            del cart_dict[sku_id]
+
+        # 创建响应对象
+        respones = Response(status=status.HTTP_204_NO_CONTENT)
+        # 设置cookie
+        respones.set_cookie('cart', dumps(cart_dict), COOKIE_EXPIRES)
+        return respones
+
+
+class SelectAllView(APIView):
+    def perform_authentication(self, request):
+        pass
+
+    def put(self, request):
+        # 接受参数
+        selected = bool(request.data.get('selected'))
+
+        # 获取cookie
+        cook_dict = request.COOKIES.get('cart')
+        if cook_dict is None:
+            return Response({'message':'no data'})
+
+        cook_dict = loads(cook_dict)
+
+        # 修改cookie
+        for sku_id, sku_statu in cook_dict.items():
+            cook_dict[sku_id]['selected'] = selected
+
+        # 创建响应对象
+        response = Response({'message': 'ok'}, status=status.HTTP_202_ACCEPTED)
+        response.set_cookie('cart', dumps(cook_dict), COOKIE_EXPIRES)
+
+        # 返回响应
+
         return response
