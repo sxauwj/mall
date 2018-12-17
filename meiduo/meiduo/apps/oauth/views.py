@@ -9,7 +9,7 @@ from django.conf import settings
 from meiduo.utils import jwt_token
 from rest_framework.generics import CreateAPIView
 from .serializers import QQSerializer
-
+from carts.utils import merge_cart_cookie_to_redis
 
 class OauthQQView(APIView):
     def get(self, request):
@@ -60,7 +60,26 @@ class QQAuthUserView(CreateAPIView):
                 'username': qq_loginer.user.username,
                 'token': token
             }
-            return Response(data)
+            response = Response(data)
+            # 已经授权再次登录直接合并购物车
+            response = merge_cart_cookie_to_redis(request,qq_loginer.user.id,response)
+            return response
 
     # 凡是没有帐号的则创建帐号
     serializer_class = QQSerializer
+
+    # 合并购物车,在序列化器中无法得到response所以在视图中重写post方法
+    def post(self,request):
+        response = super().post(request)
+
+        if 'user_id' in response.data:
+            user_id = response.data.get('user_id')
+
+        response = merge_cart_cookie_to_redis(request,user_id,response)
+
+        return response
+
+
+
+
+

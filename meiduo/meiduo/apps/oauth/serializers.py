@@ -15,7 +15,7 @@ class QQSerializer(serializers.Serializer):
     # openid  write_only = True
     access_token = serializers.CharField(write_only=True)
     # 负责序列化输出的数据
-    id = serializers.IntegerField(read_only=True)
+    user_id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(read_only=True)
     token = serializers.CharField(read_only=True)
 
@@ -67,4 +67,6 @@ class QQSerializer(serializers.Serializer):
             qqauth.user = user
             qqauth.save()
             user.token = generate_token(user)
+
+        user.user_id = user.id
         return user

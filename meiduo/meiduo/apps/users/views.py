@@ -192,6 +192,9 @@ class SKUHistoryView(CreateAPIView):
 
 
 class LoginView(ObtainJSONWebToken):
+    """
+    用户登录合并购物车
+    """
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 
