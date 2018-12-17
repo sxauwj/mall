@@ -138,25 +138,36 @@ class CartView(APIView):
         sku_id = serializer.validated_data['sku_id']
         count = serializer.validated_data['count']
         selected = serializer.validated_data['selected']
-        # 读取cookie中的数据
-        cart_dict = request.COOKIES.get('cart')
-        if cart_dict is None:
-            return Response({'message': 'no data'})
 
-        cart_dict = loads(cart_dict)
-
-        if sku_id not in cart_dict:
-            return Response({'message': 'no data'})
-
-        # 修改cookie中的数据
-        cart_dict[sku_id]['count'] = count
-        cart_dict[sku_id]['selected'] = selected
-
+        user = validate_user(request)
         # 创建响应对象
         response = Response(serializer.validated_data)
+        if user is None:
+            # 读取cookie中的数据
+            cart_dict = request.COOKIES.get('cart')
+            if cart_dict is None:
+                return Response({'message': 'no data'})
 
-        # 设置cookie
-        response.set_cookie('cart', dumps(cart_dict), COOKIE_EXPIRES)
+            cart_dict = loads(cart_dict)
+
+            if sku_id not in cart_dict:
+                return Response({'message': 'no data'})
+
+            # 修改cookie中的数据
+            cart_dict[sku_id]['count'] = count
+            cart_dict[sku_id]['selected'] = selected
+
+            # 设置cookie
+            response.set_cookie('cart', dumps(cart_dict), COOKIE_EXPIRES)
+        else:
+            redis_cli = get_redis_connection('cart')
+
+            redis_cli.hset('cart_%d' % user.id,sku_id,count)
+            if selected:
+                redis_cli.sadd('cart_selected%d' % user.id,sku_id)
+            else:
+                redis_cli.srem('cart_selected%d' % user.id,sku_id)
+
         # 返回响应
         return response
 

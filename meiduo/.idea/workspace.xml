@@ -4,7 +4,6 @@
     <list default="true" id="c2ce74eb-0e24-401c-873a-a9db2cf00cff" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/meiduo/apps/carts/views.py" afterPath="$PROJECT_DIR$/meiduo/apps/carts/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/meiduo/settings/dev.py" afterPath="$PROJECT_DIR$/meiduo/settings/dev.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -47,16 +46,17 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/meiduo/apps/carts/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
-              <caret line="112" column="22" lean-forward="false" selection-start-line="112" selection-start-column="22" selection-end-line="112" selection-end-column="22" />
+            <state relative-caret-position="20">
+              <caret line="162" column="21" lean-forward="false" selection-start-line="162" selection-start-column="12" selection-end-line="162" selection-end-column="21" />
               <folding>
                 <element signature="e#0#40#0" expanded="true" />
                 <element signature="e#605#700#0" expanded="false" />
-                <element signature="e#4145#5065#0" expanded="false" />
-                <element signature="e#5106#5670#0" expanded="false" />
-                <element signature="e#5707#6382#0" expanded="false" />
-                <element signature="e#5758#5762#0" expanded="false" />
-                <element signature="e#5800#6382#0" expanded="false" />
+                <element signature="e#739#2257#0" expanded="false" />
+                <element signature="e#3833#3941#0" expanded="false" />
+                <element signature="e#6125#6800#0" expanded="false" />
+                <element signature="e#6176#6180#0" expanded="false" />
+                <marker date="1545019831958" expanded="false" signature="5515:6088" ph="..." />
+                <marker date="1545019831958" expanded="false" signature="6209:6800" ph="..." />
               </folding>
             </state>
           </provider>
@@ -918,7 +918,14 @@
       <option name="project" value="LOCAL" />
       <updated>1545014858486</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="登录状态下的添加 查看购物车">
+      <created>1545019221314</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1545019221314</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TodoView">
@@ -941,7 +948,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970026" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.7161804" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6648501" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.40362224" sideWeight="0.48664945" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1992238" sideWeight="0.48664945" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16086236" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19176319" sideWeight="0.48964897" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
@@ -1003,7 +1010,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="配置日志" />
     <MESSAGE value="配置域名并添加可以访问后端的域名" />
     <MESSAGE value="完成发送短信原型" />
     <MESSAGE value="注册celery" />
@@ -1028,7 +1034,8 @@
     <MESSAGE value="加入购物车" />
     <MESSAGE value="查看购物车" />
     <MESSAGE value="修改　删除　全选购物车" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改　删除　全选购物车" />
+    <MESSAGE value="登录状态下的添加 查看购物车" />
+    <option name="LAST_COMMIT_MESSAGE" value="登录状态下的添加 查看购物车" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1042,7 +1049,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="30" />
+      <option name="time" value="31" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1749,16 +1756,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/meiduo/apps/carts/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="112" column="22" lean-forward="false" selection-start-line="112" selection-start-column="22" selection-end-line="112" selection-end-column="22" />
+        <state relative-caret-position="20">
+          <caret line="162" column="21" lean-forward="false" selection-start-line="162" selection-start-column="12" selection-end-line="162" selection-end-column="21" />
           <folding>
             <element signature="e#0#40#0" expanded="true" />
             <element signature="e#605#700#0" expanded="false" />
-            <element signature="e#4145#5065#0" expanded="false" />
-            <element signature="e#5106#5670#0" expanded="false" />
-            <element signature="e#5707#6382#0" expanded="false" />
-            <element signature="e#5758#5762#0" expanded="false" />
-            <element signature="e#5800#6382#0" expanded="false" />
+            <element signature="e#739#2257#0" expanded="false" />
+            <element signature="e#3833#3941#0" expanded="false" />
+            <element signature="e#6125#6800#0" expanded="false" />
+            <element signature="e#6176#6180#0" expanded="false" />
+            <marker date="1545019831958" expanded="false" signature="5515:6088" ph="..." />
+            <marker date="1545019831958" expanded="false" signature="6209:6800" ph="..." />
           </folding>
         </state>
       </provider>
