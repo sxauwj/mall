@@ -174,21 +174,27 @@ class CartView(APIView):
     def delete(self, request):
         # 获取sku_id {'sku_id': 12}
         sku_id_dict = request.data
-
         sku_id = int(sku_id_dict['sku_id'])
-        # 获取cookie
-        cart_dict = request.COOKIES.get('cart')
-        if cart_dict is None:
-            return Response({"message": 'no data'})
-        cart_dict = loads(cart_dict)
-        # 删除
-        if sku_id in cart_dict:
-            del cart_dict[sku_id]
 
+        user = request.user
         # 创建响应对象
         respones = Response(status=status.HTTP_204_NO_CONTENT)
-        # 设置cookie
-        respones.set_cookie('cart', dumps(cart_dict), COOKIE_EXPIRES)
+        if user is None:
+
+            # 获取cookie
+            cart_dict = request.COOKIES.get('cart')
+            if cart_dict is None:
+                return Response({"message": 'no data'})
+            cart_dict = loads(cart_dict)
+            # 删除
+            if sku_id in cart_dict:
+                del cart_dict[sku_id]
+           # 设置cookie
+            respones.set_cookie('cart', dumps(cart_dict), COOKIE_EXPIRES)
+        else:
+            redis_cli = get_redis_connection('cart')
+            redis_cli.hdel('cart_%d' % user.id,sku_id)
+            redis_cli.srem('cart_selected%d' % user.id,sku_id)
         return respones
 
 
