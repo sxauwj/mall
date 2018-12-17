@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import CartSerializers, CartListSerializer
@@ -6,6 +5,18 @@ from meiduo.utils.meiduo_json import dumps, loads
 from .constants import COOKIE_EXPIRES
 from goods.models import SKU
 from rest_framework import status
+from django_redis import get_redis_connection
+
+
+def validate_user(request):
+    try:
+        user = request.user
+    except:
+        # 用户未登录状态,存cookie
+        return None
+    else:
+        # 用户登录状态,存redis
+        return user
 
 
 class CartView(APIView):
@@ -27,56 +38,94 @@ class CartView(APIView):
         count = serializer.validated_data.get('count')
         selected = serializer.validated_data.get('selected')
 
-        # 获取cookie
-        cart_cookie_dict = request.COOKIES.get('cart')
-
-        # 第一次添加购物车，未获取到cookie则准备cart_cookie字典
-        if not cart_cookie_dict:
-            cart_cookie_dict = {}
-        else:
-            # 获取到cookie解码成字典
-
-            cart_cookie_dict = loads(cart_cookie_dict)
-
-        # 将物品添加到cookie中
-        print(sku_id, count)
-        print(cart_cookie_dict)
-
-        cart_cookie_dict[sku_id] = {
-            'count': count,
-            'selected': selected,
-        }
-
+        # 处理
         # 创建响应对象
-        response = Response(serializer.validated_data)
-        # 将cookie转成字符串
-        cart_cookie_str = dumps(cart_cookie_dict)
-        # 添加cookie
-        response.set_cookie('cart', cart_cookie_str, max_age=COOKIE_EXPIRES)
+        response = Response()
+        user = validate_user(request)
+        if user is None:
+            # 获取cookie
+            cart_cookie_dict = request.COOKIES.get('cart')
+
+            # 第一次添加购物车，未获取到cookie则准备cart_cookie字典
+            if not cart_cookie_dict:
+                cart_cookie_dict = {}
+            else:
+                # 获取到cookie解码成字典
+                cart_cookie_dict = loads(cart_cookie_dict)
+
+            # 将物品添加到cookie中
+            print(sku_id, count)
+            print(cart_cookie_dict)
+
+            cart_cookie_dict[sku_id] = {
+                'count': count,
+                'selected': selected,
+            }
+
+            # 将cookie转成字符串
+            cart_cookie_str = dumps(cart_cookie_dict)
+            # 添加cookie
+            response.set_cookie('cart', cart_cookie_str, max_age=COOKIE_EXPIRES)
+        else:
+            # 连接redis
+            redis_cli = get_redis_connection('cart')
+            # 写hash：　{ "商品编号":"商品id"}
+            p1 = redis_cli.pipeline()
+            p1.hset('cart_%d' % user.id, sku_id, count)
+            p1.sadd('cart_selected%d' % user.id, sku_id)
+            p1.execute()
 
         # 响应
         return response
 
     def get(self, request):
-        cart_dict = request.COOKIES.get('cart')
-        if not cart_dict:
-            return Response({'message': 'no data'})
-        # 将cookie解码成字典
-        cart_dict = loads(cart_dict)
-        # 遍历字典
-        # 接受sku对象集合
-        skus = []
-        for sku_id, sku_statu in cart_dict.items():
-            try:
-                sku = SKU.objects.get(pk=sku_id)
-            except:
-                pass
-            else:
-                sku.selected = sku_statu['selected']
-                sku.count = sku_statu['count']
-                skus.append(sku)
-        # 序列化输出sku对象　
-        serializer = CartListSerializer(skus, many=True)
+        user = validate_user(request)
+
+        if user is None:
+            # 如果用户处于未登录状态
+            cart_dict = request.COOKIES.get('cart')
+            if not cart_dict:
+                return Response({'message': 'no data'})
+            # 将cookie解码成字典
+            cart_dict = loads(cart_dict)
+            # 遍历字典
+            # 接受sku对象集合
+            skus = []
+            for sku_id, sku_statu in cart_dict.items():
+                try:
+                    sku = SKU.objects.get(pk=sku_id)
+                except:
+                    pass
+                else:
+                    sku.selected = sku_statu['selected']
+                    sku.count = sku_statu['count']
+                    skus.append(sku)
+            # 序列化输出sku对象　
+            serializer = CartListSerializer(skus, many=True)
+        else:
+            # 登录状态
+            redis_cli = get_redis_connection('cart')
+            sku_hash = redis_cli.hgetall('cart_%d' % user.id)  # dict {b'10': b'1'}
+            # 将字节转为int
+            sku_hash_dict = {int(sku_id): int(count) for sku_id, count in sku_hash.items()}
+
+            selected_sku_set = redis_cli.smembers('cart_selected%d' % user.id)  # set {b'10'}
+            # 将字节转为int
+            selected_sku = [int(sku_id) for sku_id in selected_sku_set]
+
+            sku_list = []
+            for sku, count in sku_hash_dict.items():
+                try:
+                    sku = SKU.objects.get(pk=sku)
+                except:
+                    return Response({'message': 'no data'})
+                else:
+                    sku.count = count
+                    # 判别sku的选定状态
+                    sku.selected = sku.id in selected_sku
+                sku_list.append(sku)
+            # 创建序列化器对象
+            serializer = CartListSerializer(sku_list, many=True)
         return Response(serializer.data)
 
     def put(self, request):
@@ -143,7 +192,7 @@ class SelectAllView(APIView):
         # 获取cookie
         cook_dict = request.COOKIES.get('cart')
         if cook_dict is None:
-            return Response({'message':'no data'})
+            return Response({'message': 'no data'})
 
         cook_dict = loads(cook_dict)
 
