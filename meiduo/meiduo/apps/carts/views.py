@@ -162,11 +162,11 @@ class CartView(APIView):
         else:
             redis_cli = get_redis_connection('cart')
 
-            redis_cli.hset('cart_%d' % user.id,sku_id,count)
+            redis_cli.hset('cart_%d' % user.id, sku_id, count)
             if selected:
-                redis_cli.sadd('cart_selected%d' % user.id,sku_id)
+                redis_cli.sadd('cart_selected%d' % user.id, sku_id)
             else:
-                redis_cli.srem('cart_selected%d' % user.id,sku_id)
+                redis_cli.srem('cart_selected%d' % user.id, sku_id)
 
         # 返回响应
         return response
@@ -176,7 +176,7 @@ class CartView(APIView):
         sku_id_dict = request.data
         sku_id = int(sku_id_dict['sku_id'])
 
-        user = request.user
+        user = validate_user(request)
         # 创建响应对象
         respones = Response(status=status.HTTP_204_NO_CONTENT)
         if user is None:
@@ -189,12 +189,12 @@ class CartView(APIView):
             # 删除
             if sku_id in cart_dict:
                 del cart_dict[sku_id]
-           # 设置cookie
+                # 设置cookie
             respones.set_cookie('cart', dumps(cart_dict), COOKIE_EXPIRES)
         else:
             redis_cli = get_redis_connection('cart')
-            redis_cli.hdel('cart_%d' % user.id,sku_id)
-            redis_cli.srem('cart_selected%d' % user.id,sku_id)
+            redis_cli.hdel('cart_%d' % user.id, sku_id)
+            redis_cli.srem('cart_selected%d' % user.id, sku_id)
         return respones
 
 
@@ -205,22 +205,31 @@ class SelectAllView(APIView):
     def put(self, request):
         # 接受参数
         selected = bool(request.data.get('selected'))
-
-        # 获取cookie
-        cook_dict = request.COOKIES.get('cart')
-        if cook_dict is None:
-            return Response({'message': 'no data'})
-
-        cook_dict = loads(cook_dict)
-
-        # 修改cookie
-        for sku_id, sku_statu in cook_dict.items():
-            cook_dict[sku_id]['selected'] = selected
-
         # 创建响应对象
         response = Response({'message': 'ok'}, status=status.HTTP_202_ACCEPTED)
-        response.set_cookie('cart', dumps(cook_dict), COOKIE_EXPIRES)
+        user = validate_user(request)
+
+        if user is None:
+            # 获取cookie
+            cook_dict = request.COOKIES.get('cart')
+            if cook_dict is None:
+                return Response({'message': 'no data'})
+            cook_dict = loads(cook_dict)
+
+            # 修改cookie
+            for sku_id, sku_statu in cook_dict.items():
+                cook_dict[sku_id]['selected'] = selected
+            response.set_cookie('cart', dumps(cook_dict), COOKIE_EXPIRES)
+        else:
+            redis_cli = get_redis_connection('cart')
+            sku_list = redis_cli.hgetall('cart_%d' % user.id) # {b'16': b'4'}
+            sku_id = [int(sku_id) for sku_id,count in sku_list.items()]
+
+
+            if selected:
+                redis_cli.sadd('cart_selected%d' % user.id, *sku_id)
+            else:
+                redis_cli.srem('cart_selected%d' % user.id, *sku_id)
 
         # 返回响应
-
         return response
