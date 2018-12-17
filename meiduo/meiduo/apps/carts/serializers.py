@@ -18,3 +18,12 @@ class CartSerializers(serializers.Serializer):
 
         return value
 
+class CartListSerializer(serializers.ModelSerializer):
+    count = serializers.IntegerField()
+    selected = serializers.BooleanField()
+
+    class Meta:
+
+      model = SKU
+      fields = ['id','count','selected','name','default_image_url','price']
+
