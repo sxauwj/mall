@@ -6,6 +6,8 @@ from datetime import datetime
 from django_redis import get_redis_connection
 from django.db import transaction
 
+import time
+
 class OrderSerializer(serializers.Serializer):
     address = serializers.IntegerField(write_only=True)
     pay_method = serializers.IntegerField(write_only=True)
@@ -59,10 +61,15 @@ class OrderSerializer(serializers.Serializer):
                 if sku.stock < count:
                     transaction.savepoint_rollback(save_id)
                     raise serializers.ValidationError('库存不足')
-                sku.stock -= count
-                sku.sales += count
-                sku.save()
 
+                time.sleep(5)
+                stock_new = sku.stock - count
+                sales_new = sku.sales + count
+                # 返回修改的数据条数
+                count = SKU.objects.filter(pk=sku.id,stock =sku.stock).update(stock=stock_new,sales = sales_new)
+                if count == 0:
+                    transaction.savepoint_rollback(save_id)
+                    raise serializers.ValidationError('服务器忙，请稍后重试')
                 # 创建OrderGoods对象
                 order_goods = OrderGoods.objects.create(
                     order_id = order_id,
